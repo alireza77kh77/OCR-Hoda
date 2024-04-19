@@ -1,0 +1,69 @@
+import numpy as np
+import glob as gb
+import cv2
+# from google.colab.patches import cv2_imshow
+
+image_path = gb.glob('C://Users//www.parsianit.co//OneDrive//Desktop//Hoda 0-9/'+'*.bmp')
+image_path
+
+x=[]
+y=[]
+
+for i in range(len(image_path)):
+  path = image_path[i]
+  idx = path.rfind('_')-1
+  y.append(path[idx])
+  img = cv2.imread(path,0)
+  # cv2.imshow('image',img)
+  # ch = cv2.waitKey(0)
+  # if ch==ord('q'):
+  #   break
+  img = cv2.resize(img,dsize=(10,10))
+  data = np.reshape(img,newshape=(100,))
+  x.append(data)
+x
+
+
+x = np.array(x)
+y = np.array(y)
+
+
+
+list_per = np.random.permutation(len(x))
+x_per =[]
+y_per =[]
+for i in range(len(list_per)):
+  index_per=list_per[i]
+  x_per.append(x[index_per])
+  y_per.append(y[index_per])
+
+x_per = np.array(x_per)
+y_per = np.array(y_per)
+
+
+train_test_index = int(0.7*len(x_per))
+x_train = x_per[0:train_test_index,:]
+y_train = y_per[0:train_test_index]
+x_test = x_per[train_test_index:,:]
+y_test = y_per[train_test_index:]
+
+
+
+
+x_train=x_train/255
+x_test=x_test/255
+
+
+
+from sklearn.neural_network import MLPClassifier
+
+
+
+
+# hidden_layer_sizes=(100,50)
+mlp = MLPClassifier(hidden_layer_sizes=(50),activation='logistic',tol = 0.0001,momentum=0.95,verbose=True,max_iter=500,shuffle=False)
+mlp.fit(x_train,y_train)
+
+
+print(mlp.score(x_train, y_train))
+print(mlp.score(x_test, y_test))
